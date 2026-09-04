@@ -24,7 +24,9 @@ import (
 
 	"github.com/mymmrac/telego"
 	"github.com/vandi37/ticket-er/internal/commands"
+	"github.com/vandi37/ticket-er/internal/reply"
 	"github.com/vandi37/ticket-er/internal/service"
+	"github.com/vandi37/ticket-er/internal/text"
 	"github.com/vandi37/ticket-er/internal/usernames"
 	"github.com/vandi37/ticket-er/pkg/logger"
 	"go.uber.org/zap"
@@ -80,6 +82,14 @@ func Run(ctx context.Context, b *telego.Bot) {
 	handler.Handle(service.Give, th.TextMatches(commands.Give))
 	handler.Handle(service.Take, th.TextMatches(commands.Take))
 	handler.Handle(service.Transfer, th.TextMatches(commands.Transfer))
+	handler.Handle(func(ctx *th.Context, update telego.Update) error {
+		_, err := reply.Reply(ctx, update.Message, text.Start())
+		return err
+	}, th.CommandEqual("start"))
+	handler.Handle(func(ctx *th.Context, update telego.Update) error {
+		_, err := reply.Reply(ctx, update.Message, text.Help())
+		return err
+	}, th.CommandEqual("help"))
 	if err := handler.Start(); err != nil {
 		logger.Error(ctx, "error starting handler", zap.Error(err))
 	}
