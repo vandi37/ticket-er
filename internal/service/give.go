@@ -1,16 +1,16 @@
 /**
  * The Ticket-er Telegram Bot Source Code
  * Copyright (C) 2026 Lev (Leo) Kondukov (aka DiceBarrel, Barrel, Vandi)
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -141,7 +141,7 @@ func Take(ctx *th.Context, update telego.Update) error {
 		return err
 	}
 
-	tx, err := repo.Pay(ctx, 0, info.ID, amount, left, "take", false, true, false)
+	tx, err := repo.Pay(ctx, info.ID, 0, amount, left, "take", false, true, false)
 	if err != nil && errors.Is(err, vanerrors.Simple(repo.INSUFFICIENT_FUNDS)) {
 		_, err := reply.Reply(ctx, update.Message, text.InsufficientFunds())
 		if err != nil {
@@ -152,11 +152,11 @@ func Take(ctx *th.Context, update telego.Update) error {
 	if err != nil {
 		return save.New(err)
 	}
-	if err := notify.Notify(ctx, tx, nil, &info.ID); err != nil {
+	if err := notify.Notify(ctx, tx, &info.ID, nil); err != nil {
 		return save.New(err)
 	}
 
-	if _, err := reply.Reply(ctx, update.Message, text.Give(info, amount)); err != nil {
+	if _, err := reply.Reply(ctx, update.Message, text.Take(info, amount)); err != nil {
 		return save.New(err)
 	}
 	return nil
